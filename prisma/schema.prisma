@@ -12,3 +12,74 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Utilisateur {
+  idUtilisateur Int         @id @default(autoincrement()) 
+  nom           String
+  email         String      @unique
+  tel           String
+  mdp           String
+  role          String
+
+  vehicule      Vehicule[]
+  reservation   Reservation[]
+  abonnement    Abonnement[]
+}
+
+model Vehicule {
+  idVehicule    Int         @id @default(autoincrement())
+  plaque        String      @unique
+  typeVehicule  String
+  marque        String
+  idUtilisateur Int
+
+  utilisateur Utilisateur   @relation(fields:[idUtilisateur], references: [idUtilisateur])
+  
+  reservation Reservation[]
+  logs        Logs[]
+}
+
+model Place {
+  idPlace     Int          @id @default(autoincrement())
+  numero      String        @unique
+  typePlace   String
+  statut      String
+
+  reservation Reservation[]
+  logs        Logs[]
+}
+
+model Reservation {
+  idReservation   Int           @id @default(autoincrement())
+  dateDeb         DateTime
+  dateFin         DateTime
+  idUtilisateur   Int
+  idPlace         Int
+  idVehicule      Int
+
+  utilisateur     Utilisateur   @relation(fields:[idUtilisateur], references: [idUtilisateur])
+  place           Place         @relation(fields:[idPlace], references: [idPlace])
+  vehicule        Vehicule      @relation(fields:[idVehicule], references: [idVehicule])
+}
+
+model Abonnement {
+  idAbonnement  Int           @id @default(autoincrement())
+  dateDeb       DateTime
+  dateFin       DateTime
+  type          String
+  idUtilisateur Int
+
+  utilisateur   Utilisateur   @relation(fields:[idUtilisateur], references: [idUtilisateur])
+}
+
+model Logs {
+  idLogs      Int                  @id @default(autoincrement())
+  idVehicule  Int
+  idPlace     Int
+  heureEntree DateTime
+  heureSortie DateTime
+
+  place       Place               @relation(fields: [idPlace], references: [idPlace])
+  vehicule    Vehicule            @relation(fields: [idVehicule], references: [idVehicule])
+}
+
